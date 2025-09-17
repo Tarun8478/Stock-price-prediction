@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Prediction App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-container input, .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Stock Prediction App</h1>
+    </header>
+    <main>
+        <div class="form-container">
+            <h2>Predict Stock Price</h2>
+            <form id="stockForm">
+                <input type="text" id="stockSymbol" placeholder="Enter Stock Symbol (e.g., AAPL)" required>
+                <input type="date" id="predictionDate" required>
+                <button type="submit">Predict</button>
+            </form>
+            <div id="result" class="result" style="display: none;"></div>
+        </div>
+    </main>
+    <script>
+        const form = document.getElementById('stockForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const symbol = document.getElementById('stockSymbol').value;
+            const date = document.getElementById('predictionDate').value;
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ symbol, date })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = `Predicted price for ${symbol} on ${date}: $${data.prediction}`;
+                } else {
+                    throw new Error('Error fetching prediction');
+                }
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
